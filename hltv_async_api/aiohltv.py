@@ -481,7 +481,22 @@ class Hltv:
                 except ValueError:
                     pass
 
-        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_}
+        map_stats_ = []
+        map_stats = r.find_all('div', {"class": "map-stats-infobox-maps"})
+        team_names = r.find_all('div', {"class": "team-name"})
+        for map_stat in map_stats:
+            map_stat_ = {}
+            map_stat_["map"] = map_stat.find('div', {"class": "mapname"}).text
+            ps = map_stat.find_all('div', {"class": "map-stats-infobox-winpercentage"})
+            p1 = ps[0].find('a').text
+            p2 = ps[1].find('a').text
+            map_stat_["team1"] = p1
+            map_stat_["team2"] = p2
+            map_stats_.append(map_stat_)
+
+        teams_box = r.find("div", {"class": "teamsBox"})
+        logos = teams_box.find_all("img")
+        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_, "map_stats": map_stats_, "team1": {"name": team_names[0].text, "logo": logos[1]['src']}, "team2": {"name": team_names[1].text, "logo": logos[3]['src']}}
 
     async def get_results(self, days: int = 1,
                           min_rating: int = 1,
