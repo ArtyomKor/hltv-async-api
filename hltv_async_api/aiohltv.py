@@ -483,7 +483,6 @@ class Hltv:
 
         map_stats_ = []
         map_stats = r.find_all('div', {"class": "map-stats-infobox-maps"})
-        team_names = r.find_all('div', {"class": "team-name"})
         for map_stat in map_stats:
             map_stat_ = {}
             map_stat_["map"] = map_stat.find('div', {"class": "mapname"}).text
@@ -496,6 +495,7 @@ class Hltv:
 
         teams_box = r.find("div", {"class": "teamsBox"})
         logos = teams_box.find_all("img")
+        team_names = teams_box.find_all("div", {"class": "teamName"})
         return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_, "map_stats": map_stats_, "team1": {"name": team_names[0].text, "logo": logos[1]['src']}, "team2": {"name": team_names[1].text, "logo": logos[3]['src']}}
 
     async def get_results(self, days: int = 1,
