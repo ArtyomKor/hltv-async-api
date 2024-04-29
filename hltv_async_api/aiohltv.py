@@ -177,16 +177,16 @@ class Hltv:
                 if response.status == 403 or response.status == 404:
                     self.logger.debug("Got 403 forbitten")
                     return False, await self.loop.run_in_executor(None, partial(self._parse_error_handler, delay))
-                    #return False, self._parse_error_handler(delay)
+                    # return False, self._parse_error_handler(delay)
 
                 # checking for challenge page.
                 result = await response.text()
                 page = await self.loop.run_in_executor(None, partial(self._f, result))
                 forbitten = await self.loop.run_in_executor(None, partial(self._cloudflare_check, page))
-                #forbitten, parsed = self._cloudflare_check(result)
+                # forbitten, parsed = self._cloudflare_check(result)
                 if forbitten:
                     return False, await self.loop.run_in_executor(None, partial(self._parse_error_handler, delay))
-                    #return False, self._parse_error_handler(delay)
+                    # return False, self._parse_error_handler(delay)
 
                 return True, page
         except (ClientProxyConnectionError, ClientResponseError, ClientOSError,
@@ -496,7 +496,9 @@ class Hltv:
         teams_box = r.find("div", {"class": "teamsBox"})
         logos = teams_box.find_all("img")
         team_names = teams_box.find_all("div", {"class": "teamName"})
-        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_, "map_stats": map_stats_, "team1": {"name": team_names[0].text, "logo": logos[1]['src']}, "team2": {"name": team_names[1].text, "logo": logos[3]['src']}}
+        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_,
+                "map_stats": map_stats_, "team1": {"name": team_names[0].text, "logo": logos[1]['src'] if not logos[1]['src'].startswith('/') else logos[2]['src']},
+                "team2": {"name": team_names[1].text, "logo": logos[3]['src'] if not logos[3]['src'].startswith('/') else logos[4]['src']}}
 
     async def get_results(self, days: int = 1,
                           min_rating: int = 1,
@@ -642,7 +644,7 @@ class Hltv:
         matches = []
         try:
             live_matches = r.find("div", {'class', 'liveMatchesSection'}).find_all("div",
-                                                     {'class', 'liveMatch-container'})
+                                                                                   {'class', 'liveMatch-container'})
         except AttributeError:
             live_matches = []
         for live in live_matches:
@@ -702,7 +704,7 @@ class Hltv:
 
         return matches
 
-    #DELETE ?
+    # DELETE ?
     async def get_featured_events(self, max_: int = 1):
         r = await self._fetch('https://www.hltv.org/events')
 
@@ -1051,6 +1053,7 @@ class Hltv:
 async def main():
     async with Hltv(proxy_path='proxies.txt', proxy_protocol='http', debug=True) as hltv:
         print(await hltv.get_matches())
+
 
 if __name__ == '__main__':
     asyncio.run(main())

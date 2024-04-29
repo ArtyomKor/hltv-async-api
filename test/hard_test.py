@@ -165,7 +165,7 @@ class HltvHardTest:
 @pytest.mark.asyncio
 async def main():
     async with Hltv(debug=True) as hltv:
-        print(await hltv.get_match_info(2371508, 'furia', 'liquid', 'esl-pro-league-season-19'))
+        print(await hltv.get_match_info(2371522, 'complexity', 'pera', 'esl-pro-league-season-19'))
         # test = HltvHardTest(hltv=hltv, debug=True)
         # await test.start_test()
 
