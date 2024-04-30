@@ -1,14 +1,15 @@
-import pytz
 import asyncio
-import re
 import logging
-from typing import Any, List
+import re
 from datetime import date, datetime, timedelta
-from bs4 import BeautifulSoup
 from functools import partial
+from typing import Any, List
+
+import pytz
 from aiohttp import ClientSession, ClientTimeout
 from aiohttp.client_exceptions import ClientProxyConnectionError, ClientResponseError, ClientOSError, \
     ServerDisconnectedError, ClientHttpProxyError
+from bs4 import BeautifulSoup
 
 
 class Hltv:
@@ -499,9 +500,14 @@ class Hltv:
         pick = r.find_all('div', {"class": "pick-a-winner-team"})
         t1 = pick[0].find("div", "percentage").text
         t2 = pick[1].find("div", "percentage").text
+        event_logo = r.find("img", {'class': "matchSidebarEventLogo"})['srcset'].split(" ")[0]
         return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_,
-                "map_stats": map_stats_, "team1": {"name": team_names[0].text, "logo": logos[1]['src'] if not logos[1]['src'].startswith('/') else logos[2]['src'], "percentage": t1},
-                "team2": {"name": team_names[1].text, "logo": logos[3]['src'] if not logos[3]['src'].startswith('/') else logos[4]['src'], "percentage": t2}}
+                "map_stats": map_stats_, "team1": {"name": team_names[0].text,
+                                                   "logo": logos[1]['src'] if not logos[1]['src'].startswith('/') else
+                                                   logos[2]['src'], "percentage": t1},
+                "team2": {"name": team_names[1].text,
+                          "logo": logos[3]['src'] if not logos[3]['src'].startswith('/') else logos[4]['src'],
+                          "percentage": t2}, "event_logo": event_logo}
 
     async def get_results(self, days: int = 1,
                           min_rating: int = 1,
