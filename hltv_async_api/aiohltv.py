@@ -498,8 +498,16 @@ class Hltv:
         logos = teams_box.find_all("img")
         team_names = teams_box.find_all("div", {"class": "teamName"})
         pick = r.find_all('div', {"class": "pick-a-winner-team"})
-        t1 = pick[0].find("div", "percentage").text
-        t2 = pick[1].find("div", "percentage").text
+        try:
+            t1 = pick[0].find("div", "percentage").text
+        except IndexError:
+            t1 = None
+        try:
+            t2 = pick[1].find("div", "percentage").text
+        except IndexError:
+            t2 = None
+        if len(map_stats_) == 0:
+            map_stats_ = None
         event_logo = r.find("img", {'class': "matchSidebarEventLogo"})['srcset'].split(" ")[0]
         return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_,
                 "map_stats": map_stats_, "team1": {"name": team_names[0].text,
