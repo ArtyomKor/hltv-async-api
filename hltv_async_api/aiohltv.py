@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import re
+import traceback
 from datetime import date, datetime, timedelta
 from functools import partial
 from typing import Any, List
@@ -13,8 +14,9 @@ from bs4 import BeautifulSoup
 
 
 class Hltv:
-    def __init__(self, max_delay: int = 15,
-                 timeout: int = 5,
+    def __init__(self, flaresolverr: str,
+                 max_delay: int = 15,
+                 timeout: int = 25,
                  proxy_path: str | None = None,
                  proxy_list: list | None = None,
                  debug: bool = False,
@@ -23,10 +25,10 @@ class Hltv:
                  delete_proxy: bool = False,
                  tz: str = 'Europe/Copenhagen',
                  ):
+        self.flaresolverr = flaresolverr
+
         self.headers = {
-            "referer": "https://www.hltv.org/stats",
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-            "hltvTimeZone": "Europe/Copenhagen"
+            "Content-Type": "application/json"
         }
         self.DEBUG = debug
         self._configure_logging()
@@ -173,7 +175,10 @@ class Hltv:
             # delay, only for non-proxy users. (default = 1-15s)
             await asyncio.sleep(delay)
         try:
-            async with self.session.get(url, headers=self.headers, proxy=proxy, timeout=self.timeout) as response:
+            print(self.headers)
+            async with self.session.post(f'{self.flaresolverr.removesuffix("/")}/v1',
+                                         json={'cmd': 'request.get', 'url': url, 'maxTimeout': 60000},
+                                         headers=self.headers, proxy=proxy, timeout=self.timeout) as response:
                 self.logger.info(f"Fetching {url}, code: {response.status}")
                 if response.status == 403 or response.status == 404:
                     self.logger.debug("Got 403 forbitten")
@@ -181,7 +186,7 @@ class Hltv:
                     # return False, self._parse_error_handler(delay)
 
                 # checking for challenge page.
-                result = await response.text()
+                result = (await response.json())["solution"]["response"]
                 page = await self.loop.run_in_executor(None, partial(self._f, result))
                 forbitten = await self.loop.run_in_executor(None, partial(self._cloudflare_check, page))
                 # forbitten, parsed = self._cloudflare_check(result)
@@ -190,8 +195,7 @@ class Hltv:
                     # return False, self._parse_error_handler(delay)
 
                 return True, page
-        except (ClientProxyConnectionError, ClientResponseError, ClientOSError,
-                ServerDisconnectedError, TimeoutError, ClientHttpProxyError, ClientTimeout) as e:
+        except Exception as e:
             self.logger.debug(e)
             delay = self._parse_error_handler(delay)
             return False, delay

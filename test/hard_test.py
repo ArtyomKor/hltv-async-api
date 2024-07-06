@@ -164,7 +164,7 @@ class HltvHardTest:
 
 @pytest.mark.asyncio
 async def main():
-    async with Hltv(debug=True) as hltv:
+    async with Hltv(debug=True, flaresolverr="http://cf.negr-v-lesu.ru") as hltv:
         print(await hltv.get_match_info(2371674, '3DMAX', 'PARIVISION', 'YaLLa-Compass-Spring-2024'))
         # test = HltvHardTest(hltv=hltv, debug=True)
         # await test.start_test()
