@@ -25,7 +25,7 @@ class HltvHardTest:
         if hltv:
             self.hltv = hltv
         else:
-            self.hltv = Hltv(debug=True, timeout=1, max_delay=5)
+            self.hltv = Hltv(debug=True, timeout=1, max_delay=5, flaresolverr="https://cf.negr-v-lesu.ru")
 
     async def parse_and_assert(self, coro, expected_keys=None):
         try:
@@ -164,10 +164,11 @@ class HltvHardTest:
 
 @pytest.mark.asyncio
 async def main():
-    async with Hltv(debug=True, flaresolverr="http://cf.negr-v-lesu.ru") as hltv:
-        print(await hltv.get_match_info(2371674, '3DMAX', 'PARIVISION', 'YaLLa-Compass-Spring-2024'))
-        # test = HltvHardTest(hltv=hltv, debug=True)
-        # await test.start_test()
+    async with Hltv(debug=True, flaresolverr="https://cf.negr-v-lesu.ru") as hltv:
+        #print(await hltv.get_match_info(2371674, '3DMAX', 'PARIVISION', 'YaLLa-Compass-Spring-2024'))
+        print(await hltv.get_matches(live=True, min_rating=1))
+        #test = HltvHardTest(hltv=hltv, debug=True)
+        #await test.start_test()
 
 
 if __name__ == '__main__':

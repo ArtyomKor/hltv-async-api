@@ -185,14 +185,14 @@ class Hltv:
                     # return False, self._parse_error_handler(delay)
 
                 # checking for challenge page.
-                result = (await response.json())["solution"]["response"]
+                json = (await response.json())
+                result = json["solution"]["response"]
                 page = await self.loop.run_in_executor(None, partial(self._f, result))
                 forbitten = await self.loop.run_in_executor(None, partial(self._cloudflare_check, page))
                 # forbitten, parsed = self._cloudflare_check(result)
                 if forbitten:
                     return False, await self.loop.run_in_executor(None, partial(self._parse_error_handler, delay))
                     # return False, self._parse_error_handler(delay)
-
                 return True, page
         except Exception as e:
             self.logger.debug(e)
@@ -320,7 +320,7 @@ class Hltv:
                 for i, date_div in enumerate(r.find_all('div', {'class': 'upcomingMatchesSection'}), start=1):
                     if i > days:
                         break
-                    date_ = date_div.find('span', {'class': 'matchDayHeadline'}).text.split()[-1]
+                    date_ = date_div.find('div', {'class': 'matchDayHeadline'}).text.split()[-1]
 
                     for match in date_div.find_all('div', {'class': 'upcomingMatch'}):
                         time_ = match.find('div', {'class': 'matchTime'}).text
