@@ -175,7 +175,6 @@ class Hltv:
             # delay, only for non-proxy users. (default = 1-15s)
             await asyncio.sleep(delay)
         try:
-            print(self.headers)
             async with self.session.post(f'{self.flaresolverr.removesuffix("/")}/v1',
                                          json={'cmd': 'request.get', 'url': url, 'maxTimeout': 60000},
                                          headers=self.headers, proxy=proxy, timeout=self.timeout) as response:
@@ -1069,12 +1068,3 @@ class Hltv:
                 break
 
         return news
-
-
-async def main():
-    async with Hltv(proxy_path='proxies.txt', proxy_protocol='http', debug=True) as hltv:
-        print(await hltv.get_matches())
-
-
-if __name__ == '__main__':
-    asyncio.run(main())
