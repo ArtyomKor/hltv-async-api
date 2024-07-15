@@ -1,15 +1,12 @@
 import asyncio
 import logging
 import re
-import traceback
 from datetime import date, datetime, timedelta
 from functools import partial
 from typing import Any, List
 
 import pytz
-from aiohttp import ClientSession, ClientTimeout
-from aiohttp.client_exceptions import ClientProxyConnectionError, ClientResponseError, ClientOSError, \
-    ServerDisconnectedError, ClientHttpProxyError
+from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 
 
@@ -498,7 +495,6 @@ class Hltv:
             map_stats_.append(map_stat_)
 
         teams_box = r.find("div", {"class": "teamsBox"})
-        logos = teams_box.find_all("img")
         team_names = teams_box.find_all("div", {"class": "teamName"})
         pick = r.find_all('div', {"class": "pick-a-winner-team"})
         try:
@@ -511,13 +507,16 @@ class Hltv:
             t2 = None
         if len(map_stats_) == 0:
             map_stats_ = None
+        logo1 = teams_box.find("img", {"alt": team_names[0].text})
+        logo2 = teams_box.find("img", {"alt": team_names[1].text})
         event_logo = r.find("img", {'class': "matchSidebarEventLogo"})['srcset'].split(" ")[0]
         return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_,
                 "map_stats": map_stats_, "team1": {"name": team_names[0].text,
-                                                   "logo": logos[1]['src'] if not logos[1]['src'].startswith('/') else
-                                                   logos[2]['src'], "percentage": t1},
+                                                   "logo": 'https://www.hltv.org' + logo1['src'] if logo1[
+                                                       'src'].startswith("/") else logo1['src'], "percentage": t1},
                 "team2": {"name": team_names[1].text,
-                          "logo": logos[3]['src'] if not logos[3]['src'].startswith('/') else logos[4]['src'],
+                          "logo": 'https://www.hltv.org' + logo2['src'] if logo2['src'].startswith("/") else logo2[
+                              'src'],
                           "percentage": t2}, "event_logo": event_logo}
 
     async def get_results(self, days: int = 1,
