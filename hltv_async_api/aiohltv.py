@@ -374,7 +374,7 @@ class Hltv:
         return matches
 
     async def get_match_info(self, match_id: str | int, team1: str, team2: str, event_title: str, stats: bool = True):
-        r = await self._fetch(f"https://www.hltv.org/matches/{str(match_id)}/"
+        r: BeautifulSoup = await self._fetch(f"https://www.hltv.org/matches/{str(match_id)}/"
                               f"{team1.replace(' ', '-')}-vs-"
                               f"{team2.replace(' ', '-')}-"
                               f"{event_title.replace(' ', '-')}")
@@ -386,28 +386,7 @@ class Hltv:
 
         status_int = status_[status] if status in status_ else 2
 
-        if status_int == 2:
-            components = status.split(" : ")
-
-            days, hours, minutes, seconds = 0, 0, 0, 0
-
-            for component in components:
-                if 'd' in component:
-                    days = int(component.replace("d", ""))
-                elif 'h' in component:
-                    hours = int(component.replace("h", ""))
-                elif 'm' in component:
-                    minutes = int(component.replace("m", ""))
-                elif 's' in component:
-                    seconds = int(component.replace("s", ""))
-
-            date_ = datetime.now(tz=pytz.timezone('Europe/Copenhagen')).replace(second=0, microsecond=0) + timedelta(
-                days=days,
-                hours=hours,
-                minutes=minutes,
-                seconds=seconds)
-
-            status = self._localize_datetime_to_timezone(date_=date_).strftime('%d-%m-%Y-%H-%M')
+        timestamp = int(r.find('div', {'class': 'time'})['data-unix'])/1000
 
         score1, score2 = 0, 0
 
@@ -510,7 +489,7 @@ class Hltv:
         logo1 = teams_box.find("img", {"alt": team_names[0].text})
         logo2 = teams_box.find("img", {"alt": team_names[1].text})
         event_logo = r.find("img", {'class': "matchSidebarEventLogo"})['srcset'].split(" ")[0]
-        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'maps': maps, 'stats': stats_,
+        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'timestamp': timestamp, 'maps': maps, 'stats': stats_,
                 "map_stats": map_stats_, "team1": {"name": team_names[0].text,
                                                    "logo": 'https://www.hltv.org' + logo1['src'] if logo1[
                                                        'src'].startswith("/") else logo1['src'], "percentage": t1},

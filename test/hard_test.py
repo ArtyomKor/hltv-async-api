@@ -165,8 +165,8 @@ class HltvHardTest:
 @pytest.mark.asyncio
 async def main():
     async with Hltv(debug=True, flaresolverr="") as hltv:
-        print((await hltv.get_match_info(2371674, '3DMAX', 'PARIVISION', 'YaLLa-Compass-Spring-2024'))["team2"]["logo"])
-        # print(await hltv.get_match_info(2371674, '3DMAX', 'PARIVISION', 'YaLLa-Compass-Spring-2024'))
+        print((await hltv.get_match_info(2373269, 'mouz', 'sashi', 'esports-world-cup-2024'))["status"])
+        # print(await hltv.get_macth_info(2371674, '3DMAX', 'PARIVISION', 'YaLLa-Compass-Spring-2024'))
         # print(await hltv.get_matches(live=True, min_rating=1))
         # test = HltvHardTest(hltv=hltv, debug=True)
         # await test.start_test()
