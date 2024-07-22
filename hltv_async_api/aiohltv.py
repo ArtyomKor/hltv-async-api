@@ -375,9 +375,9 @@ class Hltv:
 
     async def get_match_info(self, match_id: str | int, team1: str, team2: str, event_title: str, stats: bool = True):
         r: BeautifulSoup = await self._fetch(f"https://www.hltv.org/matches/{str(match_id)}/"
-                              f"{team1.replace(' ', '-')}-vs-"
-                              f"{team2.replace(' ', '-')}-"
-                              f"{event_title.replace(' ', '-')}")
+                                             f"{team1.replace(' ', '-')}-vs-"
+                                             f"{team2.replace(' ', '-')}-"
+                                             f"{event_title.replace(' ', '-')}")
         if not r:
             return
         status_ = {'Match over': 0, 'LIVE': 1}
@@ -386,7 +386,7 @@ class Hltv:
 
         status_int = status_[status] if status in status_ else 2
 
-        timestamp = int(r.find('div', {'class': 'time'})['data-unix'])/1000
+        timestamp = int(r.find('div', {'class': 'time'})['data-unix']) / 1000
 
         score1, score2 = 0, 0
 
@@ -489,14 +489,44 @@ class Hltv:
         logo1 = teams_box.find("img", {"alt": team_names[0].text})
         logo2 = teams_box.find("img", {"alt": team_names[1].text})
         event_logo = r.find("img", {'class': "matchSidebarEventLogo"})['srcset'].split(" ")[0]
-        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'timestamp': timestamp, 'maps': maps, 'stats': stats_,
+        role1 = "TBD"
+        role2 = "TBD"
+        r_scoreboard1 = "TBD"
+        r_scoreboard2 = "TBD"
+        if status == "LIVE":
+            ct_header = r.find('thead', {'class': 'ctTeamHeaderBg'})
+            ct = ct_header.find("div", {'class': 'teamName'}).text[1:]
+
+            ct_score = r.find('div', {'class': 'ctScore'}).text
+            t_score = r.find('div', {'class': 'tScore'}).text
+
+            if team_names[0].text == ct:
+                r_scoreboard1 = ct_score
+            else:
+                r_scoreboard1 = t_score
+
+            if team_names[1].text == ct:
+                r_scoreboard2 = ct_score
+            else:
+                r_scoreboard2 = t_score
+
+            r_scoreboard1 = int(r_scoreboard1)
+            r_scoreboard2 = int(r_scoreboard2)
+            role1 = 'ct' if ct == team_names[0].text else 't'
+            role2 = 'ct' if ct == team_names[1].text else 't'
+
+        return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'timestamp': timestamp,
+                'maps': maps, 'stats': stats_,
                 "map_stats": map_stats_, "team1": {"name": team_names[0].text,
                                                    "logo": 'https://www.hltv.org' + logo1['src'] if logo1[
-                                                       'src'].startswith("/") else logo1['src'], "percentage": t1},
+                                                       'src'].startswith("/") else logo1['src'], "percentage": t1,
+                                                   'role': role1,
+                                                   'r_scoreboard': r_scoreboard1},
                 "team2": {"name": team_names[1].text,
                           "logo": 'https://www.hltv.org' + logo2['src'] if logo2['src'].startswith("/") else logo2[
                               'src'],
-                          "percentage": t2}, "event_logo": event_logo}
+                          "percentage": t2, 'role': role2,
+                          'r_scoreboard': r_scoreboard2}, "event_logo": event_logo}
 
     async def get_results(self, days: int = 1,
                           min_rating: int = 1,
