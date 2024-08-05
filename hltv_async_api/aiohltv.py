@@ -173,7 +173,8 @@ class Hltv:
             await asyncio.sleep(delay)
         try:
             async with self.session.post(f'{self.flaresolverr.removesuffix("/")}/v1',
-                                         json={'cmd': 'request.get', 'url': url, 'maxTimeout': 60000},
+                                         json={'cmd': 'request.get', 'url': url, 'maxTimeout': 60000,
+                                               'cookies': [{'name': 'nightmode', 'value': 'on'}]},
                                          headers=self.headers, proxy=proxy, timeout=self.timeout) as response:
                 self.logger.info(f"Fetching {url}, code: {response.status}")
                 if response.status == 403 or response.status == 404:
