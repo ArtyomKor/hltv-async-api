@@ -511,8 +511,13 @@ class Hltv:
             else:
                 r_scoreboard2 = t_score
 
-            r_scoreboard1 = int(r_scoreboard1) if r_scoreboard1.isdigit() else "TBD" # prevent from ебучая ошибка
-            r_scoreboard2 = int(r_scoreboard2) if r_scoreboard2.isdigit() else "TBD" # prevent from ебучая ошибка
+            try:
+                r_scoreboard1 = int(r_scoreboard1)
+            except: ...
+            try:
+                r_scoreboard2 = int(r_scoreboard2)
+            except:
+                ...
             role1 = 'ct' if ct == team_names[0].text else 't'
             role2 = 'ct' if ct == team_names[1].text else 't'
 
