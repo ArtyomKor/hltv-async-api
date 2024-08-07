@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 
 class Hltv:
     def __init__(self, flaresolverr: str,
+                 night: bool = True,
                  max_delay: int = 15,
                  timeout: int = 25,
                  proxy_path: str | None = None,
@@ -23,6 +24,7 @@ class Hltv:
                  tz: str = 'Europe/Copenhagen',
                  ):
         self.flaresolverr = flaresolverr
+        self.night = night
 
         self.headers = {
             "Content-Type": "application/json"
@@ -487,9 +489,15 @@ class Hltv:
             t2 = None
         if len(map_stats_) == 0:
             map_stats_ = None
-        logo1 = teams_box.find("img", {"alt": team_names[0].text})
-        logo2 = teams_box.find("img", {"alt": team_names[1].text})
-        event_logo = r.find("img", {'class': "matchSidebarEventLogo"})['srcset'].split(" ")[0]
+        logo1 = teams_box.find_all("img", {"alt": team_names[0].text, "height": "60px"})
+        if (len(logo1) == 1): logo1 = logo1[0]
+        else: logo1 = logo1[1] if self.night else logo1[0]
+        logo2 = teams_box.find_all("img", {"alt": team_names[1].text, "height": "60px"})
+        if (len(logo2) == 1): logo2 = logo2[0]
+        else: logo2 = logo2[1] if self.night else logo2[0]
+        event_logo = r.find_all("img", {'class': "matchSidebarEventLogo"})
+        if (len(event_logo) == 1): event_logo = event_logo[0]['srcset'].split(" ")[0]
+        else: event_logo = event_logo[1 if self.night else 0]['srcset'].split(" ")[0]
         role1 = "TBD"
         role2 = "TBD"
         r_scoreboard1 = "TBD"
