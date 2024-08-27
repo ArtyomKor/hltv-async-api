@@ -510,35 +510,32 @@ class Hltv:
         r_scoreboard1 = "TBD"
         r_scoreboard2 = "TBD"
         if status == "LIVE":
+            ct_header = r.find('thead', {'class': 'ctTeamHeaderBg'})
+            ct = ct_header.find("div", {'class': 'teamName'}).text[1:]
+
+            ct_score = r.find('div', {'class': 'ctScore'}).text
+            t_score = r.find('div', {'class': 'tScore'}).text
+
+            if team_names[0].text == ct:
+                r_scoreboard1 = ct_score
+            else:
+                r_scoreboard1 = t_score
+
+            if team_names[1].text == ct:
+                r_scoreboard2 = ct_score
+            else:
+                r_scoreboard2 = t_score
+
             try:
-                ct_header = r.find('thead', {'class': 'ctTeamHeaderBg'})
-                ct = ct_header.find("div", {'class': 'teamName'}).text[1:]
-
-                ct_score = r.find('div', {'class': 'ctScore'}).text
-                t_score = r.find('div', {'class': 'tScore'}).text
-
-                if team_names[0].text == ct:
-                    r_scoreboard1 = ct_score
-                else:
-                    r_scoreboard1 = t_score
-
-                if team_names[1].text == ct:
-                    r_scoreboard2 = ct_score
-                else:
-                    r_scoreboard2 = t_score
-
-                try:
-                    r_scoreboard1 = int(r_scoreboard1)
-                except:
-                    ...
-                try:
-                    r_scoreboard2 = int(r_scoreboard2)
-                except:
-                    ...
-                role1 = 'ct' if ct == team_names[0].text else 't'
-                role2 = 'ct' if ct == team_names[1].text else 't'
+                r_scoreboard1 = int(r_scoreboard1)
             except:
                 ...
+            try:
+                r_scoreboard2 = int(r_scoreboard2)
+            except:
+                ...
+            role1 = 'ct' if ct == team_names[0].text else 't'
+            role2 = 'ct' if ct == team_names[1].text else 't'
 
         return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'timestamp': timestamp,
                 'maps': maps, 'stats': stats_,
