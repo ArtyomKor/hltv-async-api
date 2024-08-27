@@ -540,13 +540,21 @@ class Hltv:
         return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'timestamp': timestamp,
                 'maps': maps, 'stats': stats_,
                 "map_stats": map_stats_, "team1": {"name": team_names[0].text,
-                                                   "logo": 'https://www.hltv.org' + logo1['src'] if logo1[
-                                                       'src'].startswith("/") else logo1['src'], "percentage": t1,
+                                                   "logo": ('https://www.hltv.org' + logo1['src'] if logo1[
+                                                       'src'].startswith("/") else logo1[
+                                                       'src']) if 'src' in logo1 else (
+                                                       ('https://www.hltv.org' + logo1['srcset'] if logo1[
+                                                           'srcset'].startswith("/") else logo1['srcset']).replace(
+                                                           "&amp;", "&")), "percentage": t1,
                                                    'role': role1,
                                                    'r_scoreboard': r_scoreboard1},
                 "team2": {"name": team_names[1].text,
-                          "logo": 'https://www.hltv.org' + logo2['src'] if logo2['src'].startswith("/") else logo2[
-                              'src'],
+                          "logo": ('https://www.hltv.org' + logo2['src'] if logo2[
+                                                       'src'].startswith("/") else logo2[
+                                                       'src']) if 'src' in logo2 else (
+                                                       ('https://www.hltv.org' + logo2['srcset'] if logo2[
+                                                           'srcset'].startswith("/") else logo2['srcset']).replace(
+                                                           "&amp;", "&")),
                           "percentage": t2, 'role': role2,
                           'r_scoreboard': r_scoreboard2}, "event_logo": event_logo}
 
