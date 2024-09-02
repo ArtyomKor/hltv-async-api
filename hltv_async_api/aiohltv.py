@@ -536,13 +536,12 @@ class Hltv:
                 ...
             role1 = 'ct' if ct == team_names[0].text else 't'
             role2 = 'ct' if ct == team_names[1].text else 't'
-
         return {'id': match_id, 'score1': score1, 'score2': score2, 'status': status, 'timestamp': timestamp,
                 'maps': maps, 'stats': stats_,
                 "map_stats": map_stats_, "team1": {"name": team_names[0].text,
                                                    "logo": ('https://www.hltv.org' + logo1['src'] if logo1[
                                                        'src'].startswith("/") else logo1[
-                                                       'src']) if 'src' in logo1 else (
+                                                       'src']) if 'src=' in str(logo1) else (
                                                        ('https://www.hltv.org' + logo1['srcset'] if logo1[
                                                            'srcset'].startswith("/") else logo1['srcset']).replace(
                                                            "&amp;", "&")), "percentage": t1,
@@ -551,7 +550,7 @@ class Hltv:
                 "team2": {"name": team_names[1].text,
                           "logo": ('https://www.hltv.org' + logo2['src'] if logo2[
                                                        'src'].startswith("/") else logo2[
-                                                       'src']) if 'src' in logo2 else (
+                                                       'src']) if 'src=' in str(logo2) else (
                                                        ('https://www.hltv.org' + logo2['srcset'] if logo2[
                                                            'srcset'].startswith("/") else logo2['srcset']).replace(
                                                            "&amp;", "&")),
