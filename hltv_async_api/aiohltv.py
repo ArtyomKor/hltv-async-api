@@ -541,7 +541,7 @@ class Hltv:
                 "map_stats": map_stats_, "team1": {"name": team_names[0].text,
                                                    "logo": ('https://www.hltv.org' + logo1['src'] if logo1[
                                                        'src'].startswith("/") else logo1[
-                                                       'src']) if 'src=' in str(logo1) else (
+                                                       'src']) if ' src="' in str(logo1) else (
                                                        ('https://www.hltv.org' + logo1['srcset'] if logo1[
                                                            'srcset'].startswith("/") else logo1['srcset']).replace(
                                                            "&amp;", "&")), "percentage": t1,
@@ -550,7 +550,7 @@ class Hltv:
                 "team2": {"name": team_names[1].text,
                           "logo": ('https://www.hltv.org' + logo2['src'] if logo2[
                                                        'src'].startswith("/") else logo2[
-                                                       'src']) if 'src=' in str(logo2) else (
+                                                       'src']) if ' src="' in str(logo2) else (
                                                        ('https://www.hltv.org' + logo2['srcset'] if logo2[
                                                            'srcset'].startswith("/") else logo2['srcset']).replace(
                                                            "&amp;", "&")),
